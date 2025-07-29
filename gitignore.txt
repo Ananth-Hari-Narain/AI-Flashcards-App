@@ -207,4 +207,4 @@ marimo/_lsp/
 __marimo__/
 
 # My files
-"Personal Access Token.txt"
+PAToken.txt
