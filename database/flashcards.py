@@ -1,4 +1,4 @@
-from connection import mydb
+from .connection import mydb
 
 def add_flashcard(term, definition, flashcardSetID):
     # Adds flashcards to a particular set. The term and definition are entered by the user.
@@ -16,6 +16,9 @@ WHERE id = %s"""
     mydb.commit()
 
 def list_flashcards_in_set(flashcardSetID):
+    """
+    :return: id, term, definition
+    """
     mycursor = mydb.cursor()
     query = ("SELECT Flashcard.id, term, definition "
              "FROM Flashcard "

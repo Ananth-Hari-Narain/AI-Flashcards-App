@@ -1,4 +1,4 @@
-from connection import mydb
+from .connection import mydb
 
 def test_clear_tables():
     mycursor = mydb.cursor()

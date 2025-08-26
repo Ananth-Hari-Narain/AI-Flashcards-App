@@ -1,4 +1,4 @@
-from connection import mydb
+from .connection import mydb
 from datetime import datetime
 
 def make_new_flashcard_set(name, folderID):
@@ -19,14 +19,15 @@ def delete_flashcard_set(flashcardSetID):
 def list_all_flashcard_sets_in_folder(folder_id):
     """
     :param folder_id: When folder_id = -1, it will list all flashcard sets in all folders
+    :return: Returns the set id and set name.
     """
     mycursor = mydb.cursor()
     if folder_id == -1:
-        query = ("SELECT name "
+        query = ("SELECT id, name "
                  "FROM FlashcardSet;")
         mycursor.execute(query)
     else:
-        query = ("SELECT name "
+        query = ("SELECT FlashcardSet.id, FlashcardSet.name "
                  "FROM FlashcardSet "
                  "INNER JOIN Folder ON Folder.id = FlashcardSet.folderID "
                  "WHERE Folder.id = %s")
