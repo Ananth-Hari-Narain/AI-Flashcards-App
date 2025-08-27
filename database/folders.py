@@ -49,3 +49,15 @@ def rename_folder(folderID, newName):
              "WHERE id = %s")
     mycursor.execute(query, (newName, folderID))
     mydb.commit()
+
+def get_parent_folder(folderID):
+    mycursor = mydb.cursor()
+    # If the folder is the root, it won't have a parent folder.
+    if folderID == 0:
+        return 0
+
+    query = ("SELECT parentFolder "
+             "FROM Folder "
+             "WHERE id = %s")
+    mycursor.execute(query, (folderID,))
+    return mycursor.fetchall()[0][0]

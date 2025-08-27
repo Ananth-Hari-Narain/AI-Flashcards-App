@@ -28,6 +28,8 @@ def app_loop():
             view_flashcard_set_contents(setID)
         elif instruction == "GO TO FOLDER":
             current_folder_id = int(input("Give the id of the folder you want to go to: "))
+        elif instruction == "GO TO PARENT FOLDER":
+            current_folder_id = database.folders.get_parent_folder(current_folder_id)
         elif instruction == "CREATE FOLDER":
             name = input("What will the name of the folder be: ")
             database.folders.make_new_folder(name, current_folder_id)
