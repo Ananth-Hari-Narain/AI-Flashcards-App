@@ -1,48 +1,42 @@
-from .connection import mydb
+from . import retrieve_from_database_safely, execute_database_change_safely
 from datetime import datetime
 
 def make_new_flashcard_set(name, folderID):
-    mycursor = mydb.cursor()
+    """Create a new flashcard set inside a folder."""
     current_time = datetime.now()
-    query = "INSERT INTO FlashcardSet (name, whenCreated, lastModified, folderID) VALUES (%s, %s, %s, %s)"
-    mycursor.execute(query, (name, current_time, current_time, folderID))
-    mydb.commit()
+    query = """
+        INSERT INTO FlashcardSet (name, whenCreated, lastModified, folderID)
+        VALUES (%s, %s, %s, %s)
+    """
+    execute_database_change_safely(query, (name, current_time, current_time, folderID))
 
 
 def delete_flashcard_set(flashcardSetID):
-    mycursor = mydb.cursor()
-    query = """DELETE FROM FlashcardSet
-    WHERE id = %s"""
-    mycursor.execute(query, (flashcardSetID,))
-    mydb.commit()
+    """Delete a flashcard set by ID."""
+    query = "DELETE FROM FlashcardSet WHERE id = %s"
+    execute_database_change_safely(query, (flashcardSetID,))
+
 
 def list_all_flashcard_sets_in_folder(folder_id):
     """
-    :param folder_id: When folder_id = -1, it will list all flashcard sets in all folders
-    :return: Returns the set id and set name.
+    :return: list of (set id, set name)
     """
-    mycursor = mydb.cursor()
-    if folder_id == -1:
-        query = ("SELECT id, name "
-                 "FROM FlashcardSet;")
-        mycursor.execute(query)
-    else:
-        query = ("SELECT FlashcardSet.id, FlashcardSet.name "
-                 "FROM FlashcardSet "
-                 "INNER JOIN Folder ON Folder.id = FlashcardSet.folderID "
-                 "WHERE Folder.id = %s")
-        mycursor.execute(query, (folder_id,))
+    query = """
+        SELECT FlashcardSet.id, FlashcardSet.name
+        FROM FlashcardSet
+        INNER JOIN Folder ON Folder.id = FlashcardSet.folderID
+        WHERE Folder.id = %s
+    """
+    return retrieve_from_database_safely(query, (folder_id,))
 
-
-    return mycursor.fetchall()
 
 def list_all_flashcard_sets():
-    return list_all_flashcard_sets_in_folder(-1)
+    """Shortcut for listing all sets."""
+    query = "SELECT id, name FROM FlashcardSet;"
+    return retrieve_from_database_safely(query)
+
 
 def rename_flashcard_set(flashcardSetID, newName):
-    mycursor = mydb.cursor()
-    query = ("UPDATE FlashcardSet "
-             "SET name = %s "
-             "WHERE id = %s")
-    mycursor.execute(query, (newName, flashcardSetID))
-    mydb.commit()
+    """Rename a flashcard set."""
+    query = "UPDATE FlashcardSet SET name = %s WHERE id = %s"
+    execute_database_change_safely(query, (newName, flashcardSetID))

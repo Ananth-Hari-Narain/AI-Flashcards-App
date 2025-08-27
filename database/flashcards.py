@@ -1,44 +1,38 @@
-from .connection import mydb
+from . import retrieve_from_database_safely, execute_database_change_safely
 
 def add_flashcard(term, definition, flashcardSetID):
-    # Adds flashcards to a particular set. The term and definition are entered by the user.
-    # The flashcardSetID will be determined by the program
-    mycursor = mydb.cursor()
+    """Adds a flashcard to a particular set."""
     query = "INSERT INTO Flashcard (term, definition, setID) VALUES (%s, %s, %s)"
-    mycursor.execute(query, (term, definition, flashcardSetID))
-    mydb.commit()
+    execute_database_change_safely(query, (term, definition, flashcardSetID))
+
 
 def delete_flashcard(flashcardID):
-    mycursor = mydb.cursor()
-    query = """DELETE FROM Flashcard
-WHERE id = %s"""
-    mycursor.execute(query, (flashcardID,))
-    mydb.commit()
+    """Deletes a flashcard by ID."""
+    query = "DELETE FROM Flashcard WHERE id = %s"
+    execute_database_change_safely(query, (flashcardID,))
+
 
 def list_flashcards_in_set(flashcardSetID):
     """
+    Lists all flashcards in a set.
     :return: id, term, definition
     """
-    mycursor = mydb.cursor()
-    query = ("SELECT Flashcard.id, term, definition "
-             "FROM Flashcard "
-             "INNER JOIN FlashcardSet ON Flashcard.setID = FlashcardSet.id "
-             "WHERE FlashcardSet.id = %s;")
-    mycursor.execute(query, (flashcardSetID, ))
-    return mycursor.fetchall()
+    query = (
+        "SELECT Flashcard.id, term, definition "
+        "FROM Flashcard "
+        "INNER JOIN FlashcardSet ON Flashcard.setID = FlashcardSet.id "
+        "WHERE FlashcardSet.id = %s;"
+    )
+    return retrieve_from_database_safely(query, (flashcardSetID,))
+
 
 def change_flashcard_term(flashcardID, newTerm):
-    mycursor = mydb.cursor()
-    query = ("UPDATE Flashcard "
-             "SET term = %s "
-             "WHERE id = %s")
-    mycursor.execute(query, (newTerm, flashcardID))
-    mydb.commit()
+    """Updates the term of a flashcard."""
+    query = "UPDATE Flashcard SET term = %s WHERE id = %s"
+    execute_database_change_safely(query, (newTerm, flashcardID))
+
 
 def change_flashcard_definition(flashcardID, newDefinition):
-    mycursor = mydb.cursor()
-    query = ("UPDATE Flashcard "
-             "SET definition = %s "
-             "WHERE id = %s")
-    mycursor.execute(query, (newDefinition, flashcardID))
-    mydb.commit()
+    """Updates the definition of a flashcard."""
+    query = "UPDATE Flashcard SET definition = %s WHERE id = %s"
+    execute_database_change_safely(query, (newDefinition, flashcardID))

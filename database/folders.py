@@ -1,63 +1,54 @@
-from .connection import mydb
+from . import execute_database_change_safely, retrieve_from_database_safely
 from .flashcard_sets import list_all_flashcard_sets_in_folder
 
 def make_new_folder(name, parentFolder):
-    mycursor = mydb.cursor()
+    """Create a new folder under a parent."""
     query = "INSERT INTO Folder (name, parentFolder) VALUES (%s, %s)"
-    mycursor.execute(query, (name, parentFolder))
-    mydb.commit()
+    execute_database_change_safely(query, (name, parentFolder))
+
 
 def delete_empty_folder(folderID) -> bool:
     """
-    This function will only delete an empty folder, so it first checks if a folder is not empty.
-    :return: It will return False if the folder has flashcard sets in them and return True if it was able
-    to successfully delete the set.
+    Delete a folder only if it has no flashcard sets inside.
+    :return: True if deleted, False if not empty
     """
     flashcard_sets_in_folder = list_all_flashcard_sets_in_folder(folderID)
     if len(flashcard_sets_in_folder) != 0:
         return False
     else:
-        query = ("DELETE FROM Folder "
-                 "WHERE Folder.id = %s;")
-        mycursor = mydb.cursor()
-        mycursor.execute(query, (folderID,))
+        query = "DELETE FROM Folder WHERE Folder.id = %s;"
+        execute_database_change_safely(query, (folderID,))
         return True
+
 
 def list_all_folders_in_folder(parent_folder_id):
     """
-    :param parent_folder_id: When parent_folder_id = 0, all folders in root folder will be returned.
-    :return: Returns the folder_id and folder name
+    :param parent_folder_id: When = 0, returns all folders in the root.
+    :return: list of (folder_id, folder name)
     """
-    mycursor = mydb.cursor()
-    query = ("SELECT folder.id, folder.name "
-             "FROM Folder "
-             "WHERE folder.parentFolder = %s")
-    mycursor.execute(query, (parent_folder_id, ))
-    return mycursor.fetchall()
+    query = "SELECT Folder.id, Folder.name FROM Folder WHERE Folder.parentFolder = %s"
+    return retrieve_from_database_safely(query, (parent_folder_id,))
+
 
 def list_all_folders():
-    mycursor = mydb.cursor()
-    query = ("SELECT folder.id, folder.name "
-             "FROM Folder")
-    mycursor.execute(query)
-    return mycursor.fetchall()
+    """List all folders in the database."""
+    query = "SELECT Folder.id, Folder.name FROM Folder"
+    return retrieve_from_database_safely(query)
+
 
 def rename_folder(folderID, newName):
-    mycursor = mydb.cursor()
-    query = ("UPDATE Folder "
-             "SET name = %s "
-             "WHERE id = %s")
-    mycursor.execute(query, (newName, folderID))
-    mydb.commit()
+    """Rename a folder."""
+    query = "UPDATE Folder SET name = %s WHERE id = %s"
+    execute_database_change_safely(query, (newName, folderID))
+
 
 def get_parent_folder(folderID):
-    mycursor = mydb.cursor()
-    # If the folder is the root, it won't have a parent folder.
+    """
+    Get the parent folder of a folder.
+    Root folders (id=0) return 0.
+    """
     if folderID == 0:
         return 0
-
-    query = ("SELECT parentFolder "
-             "FROM Folder "
-             "WHERE id = %s")
-    mycursor.execute(query, (folderID,))
-    return mycursor.fetchall()[0][0]
+    query = "SELECT parentFolder FROM Folder WHERE id = %s"
+    result = retrieve_from_database_safely(query, (folderID,))
+    return result[0][0]
