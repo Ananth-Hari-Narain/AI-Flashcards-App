@@ -1,20 +1,24 @@
-from .connection import mydb
-
-def test_clear_tables():
+from .connection import get_connection
+def clear_all_tables():
+    mydb = get_connection()
     mycursor = mydb.cursor()
-    query = """TRUNCATE TABLE Flashcard"""
+    query = "SHOW TABLES"
     mycursor.execute(query)
-    mycursor.execute("TRUNCATE TABLE FlashcardSet")
-    mycursor.execute("TRUNCATE TABLE Folder")
-    mydb.commit()
+    lst = mycursor.fetchall()
+    for x in lst:
+        query = f"TRUNCATE TABLE {x[0]}"
+        mycursor.execute(query)
+        mydb.commit()
 
 def destroy_table():
+    mydb = get_connection()
     mycursor = mydb.cursor()
     query = "DROP TABLE FlashcardSet"
     mycursor.execute(query)
     mydb.commit()
 
 def show_db_structure():
+    mydb = get_connection()
     mycursor = mydb.cursor()
     query = "SHOW TABLES"
     mycursor.execute(query)
