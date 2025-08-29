@@ -9,11 +9,12 @@ def make_new_folder(name, parentFolder):
 
 def delete_empty_folder(folderID) -> bool:
     """
-    Delete a folder only if it has no flashcard sets inside.
+    Delete a folder only if it has no flashcard sets nor folders inside.
     :return: True if deleted, False if not empty
     """
     flashcard_sets_in_folder = list_all_flashcard_sets_in_folder(folderID)
-    if len(flashcard_sets_in_folder) != 0:
+    folders_in_folder = list_all_folders_in_folder(folderID)
+    if len(flashcard_sets_in_folder) + len(folders_in_folder) != 0:
         return False
     else:
         query = "DELETE FROM Folder WHERE Folder.id = %s;"
