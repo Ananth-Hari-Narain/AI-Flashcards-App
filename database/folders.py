@@ -53,3 +53,13 @@ def get_parent_folder(folderID):
     query = "SELECT parentFolder FROM Folder WHERE id = %s"
     result = retrieve_from_database_safely(query, (folderID,))
     return result[0][0]
+
+
+def move_folder(folderID, newParentID):
+    """
+    Moves the folder to a different folder by changing the parent folder id.
+    """
+    query = ("UPDATE Folder "
+             "SET parentFolder = %s "
+             "WHERE id = %s")
+    execute_database_update_safely(query, (newParentID, folderID))
