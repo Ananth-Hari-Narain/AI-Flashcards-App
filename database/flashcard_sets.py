@@ -38,5 +38,14 @@ def list_all_flashcard_sets():
 
 def rename_flashcard_set(flashcardSetID, newName):
     """Rename a flashcard set."""
-    query = "UPDATE FlashcardSet SET name = %s WHERE id = %s"
+    query = ("UPDATE FlashcardSet "
+             "SET name = %s "
+             "WHERE id = %s")
     execute_database_update_safely(query, (newName, flashcardSetID))
+
+def move_flashcard_set(flashcardSetID, newFolderID):
+    """Move a flashcard set to a new folder"""
+    query = ("UPDATE FlashcardSet "
+             "SET folderID = %s "
+             "WHERE id = %s")
+    execute_database_update_safely(query, (newFolderID, flashcardSetID))
