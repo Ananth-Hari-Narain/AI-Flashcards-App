@@ -1,20 +1,20 @@
-from . import retrieve_from_database_safely, execute_database_change_safely
+from .helpers import *
 from datetime import datetime
 
 def make_new_flashcard_set(name, folderID):
-    """Create a new flashcard set inside a folder."""
+    """Create a new flashcard set inside a folder. Returns id of new flashcard set"""
     current_time = datetime.now()
     query = """
         INSERT INTO FlashcardSet (name, whenCreated, lastModified, folderID)
         VALUES (%s, %s, %s, %s)
     """
-    execute_database_change_safely(query, (name, current_time, current_time, folderID))
+    return execute_database_insert_safely(query, (name, current_time, current_time, folderID))
 
 
 def delete_flashcard_set(flashcardSetID):
     """Delete a flashcard set by ID."""
     query = "DELETE FROM FlashcardSet WHERE id = %s"
-    execute_database_change_safely(query, (flashcardSetID,))
+    execute_database_delete_safely(query, (flashcardSetID,))
 
 
 def list_all_flashcard_sets_in_folder(folder_id):
@@ -39,4 +39,4 @@ def list_all_flashcard_sets():
 def rename_flashcard_set(flashcardSetID, newName):
     """Rename a flashcard set."""
     query = "UPDATE FlashcardSet SET name = %s WHERE id = %s"
-    execute_database_change_safely(query, (newName, flashcardSetID))
+    execute_database_update_safely(query, (newName, flashcardSetID))

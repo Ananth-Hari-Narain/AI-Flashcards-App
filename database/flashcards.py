@@ -1,15 +1,15 @@
-from . import retrieve_from_database_safely, execute_database_change_safely
+from .helpers import *
 
 def add_flashcard(term, definition, flashcardSetID):
-    """Adds a flashcard to a particular set."""
+    """Adds a flashcard to a particular set. Returns the id of the new flashcard created"""
     query = "INSERT INTO Flashcard (term, definition, setID) VALUES (%s, %s, %s)"
-    execute_database_change_safely(query, (term, definition, flashcardSetID))
+    return execute_database_insert_safely(query, (term, definition, flashcardSetID))
 
 
 def delete_flashcard(flashcardID):
     """Deletes a flashcard by ID."""
     query = "DELETE FROM Flashcard WHERE id = %s"
-    execute_database_change_safely(query, (flashcardID,))
+    execute_database_delete_safely(query, (flashcardID,))
 
 
 def list_flashcards_in_set(flashcardSetID):
@@ -29,10 +29,10 @@ def list_flashcards_in_set(flashcardSetID):
 def change_flashcard_term(flashcardID, newTerm):
     """Updates the term of a flashcard."""
     query = "UPDATE Flashcard SET term = %s WHERE id = %s"
-    execute_database_change_safely(query, (newTerm, flashcardID))
+    execute_database_update_safely(query, (newTerm, flashcardID))
 
 
 def change_flashcard_definition(flashcardID, newDefinition):
     """Updates the definition of a flashcard."""
     query = "UPDATE Flashcard SET definition = %s WHERE id = %s"
-    execute_database_change_safely(query, (newDefinition, flashcardID))
+    execute_database_update_safely(query, (newDefinition, flashcardID))

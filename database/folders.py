@@ -1,10 +1,10 @@
-from . import execute_database_change_safely, retrieve_from_database_safely
+from .helpers import *
 from .flashcard_sets import list_all_flashcard_sets_in_folder
 
 def make_new_folder(name, parentFolder):
-    """Create a new folder under a parent."""
+    """Create a new folder under a parent. Returns the id of the folder."""
     query = "INSERT INTO Folder (name, parentFolder) VALUES (%s, %s)"
-    execute_database_change_safely(query, (name, parentFolder))
+    return execute_database_insert_safely(query, (name, parentFolder))
 
 
 def delete_empty_folder(folderID) -> bool:
@@ -18,7 +18,7 @@ def delete_empty_folder(folderID) -> bool:
         return False
     else:
         query = "DELETE FROM Folder WHERE Folder.id = %s;"
-        execute_database_change_safely(query, (folderID,))
+        execute_database_delete_safely(query, (folderID,))
         return True
 
 
@@ -40,7 +40,7 @@ def list_all_folders():
 def rename_folder(folderID, newName):
     """Rename a folder."""
     query = "UPDATE Folder SET name = %s WHERE id = %s"
-    execute_database_change_safely(query, (newName, folderID))
+    execute_database_update_safely(query, (newName, folderID))
 
 
 def get_parent_folder(folderID):
