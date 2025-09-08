@@ -9,7 +9,7 @@ def list_flashcard_sets():
     sets = [{"id": r[0], "name": r[1]} for r in rows]
     return jsonify(sets), 200
 
-@flashcardSetsBluePrint.route("/folders/<int:folder_id>/flashcard-sets", methods=["GET"])
+@flashcardSetsBluePrint.route("/folders/<int:folderID>/flashcard-sets", methods=["GET"])
 def list_flashcard_sets_in_folder(folderID):
     rows = database.flashcard_sets.list_all_flashcard_sets_in_folder(folderID)
     sets = [{"id": r[0], "name": r[1]} for r in rows]
