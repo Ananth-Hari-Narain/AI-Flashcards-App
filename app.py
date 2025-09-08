@@ -1,4 +1,3 @@
-import database
 from flask import Flask
 from routes import foldersBluePrint, flashcardSetsBluePrint, flashcardsBluePrint
 
