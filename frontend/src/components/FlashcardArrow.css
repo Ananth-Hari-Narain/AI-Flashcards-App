@@ -1,0 +1,9 @@
+button {
+    border-radius: 3px;
+    border-width: 0.15em;
+
+    font-family: "SulphurPoint" sans-serif;
+    font-size: 1.5rem;
+
+    cursor: pointer;
+}
