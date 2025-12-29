@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Flashcard.css";
 
 function Flashcard({ term, definition }) {
-  const [shouldDisplayTerm, setShouldDisplayTerm] = useState();
+  const [shouldDisplayTerm, setShouldDisplayTerm] = useState(true);
   const textToDisplay = shouldDisplayTerm ? term : definition;
   return (
     <div
