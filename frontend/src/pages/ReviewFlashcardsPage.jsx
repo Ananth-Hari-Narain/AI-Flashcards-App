@@ -20,15 +20,16 @@ function useFlashcard(numCards) {
   return [index, handlers];
 }
 
-function useOnOff() {
-  const [isOn, setIsOn] = React.useState(false);
+function useOnOff(startVal=false) {
+  const [isOn, setIsOn] = React.useState(startVal);
   const handlers = React.useMemo(() => ({
     turnOn: () => {
-      setIsOn((index) => (index = true));
+      setIsOn(true);
     },
     turnOff: () => {
-      setIsOn((index) => (index = false));
+      setIsOn(false);
     },
+    toggle: () => setIsOn((index) => (index = !index)),
   }));
 
   return [isOn, handlers];
@@ -40,25 +41,55 @@ function ReviewFlashcardsPage() {
     ["What is a virus?", "A virus is like a zombie - controls host cell"],
   ];
 
-  const [cardIndex, { next, prev }] = useFlashcard(termDefs.length);
+  const [cardIndex, { next: setNextCardIndex, prev: setPrevCardIndex }] =
+    useFlashcard(termDefs.length);
+
   const [term, definition] = termDefs[cardIndex];
 
-  const [isSettingsTabOn, { turnOn, turnOff }] = useOnOff();
+  const [isSettingsTabOn, { turnOn: openSettings, turnOff: closeSettings }] =
+    useOnOff();
+
+  // Might change depending on user preference, tho this makes the most sense
+  // as generally the term is what the user will test themselves on and the 
+  // definition will contain the answer
+  const defaultShouldDisplayTerm = true;  
+
+  const [
+    shouldDisplayTerm,
+    { turnOn: displayTerm, turnOff: displayDef, toggle: toggleDefTerm },
+  ] = useOnOff(defaultShouldDisplayTerm);
+
+  const [startOnTerm, { toggle: toggleDefaultView }] = useOnOff(defaultShouldDisplayTerm);
+
+  function changeCard(indexChanger) {
+    if (startOnTerm){
+      displayTerm();
+    }
+    else{
+      displayDef();
+    }
+    indexChanger();
+  }
 
   return (
     <>
       {isSettingsTabOn && (
-        <OptionsModal className="settings-tab" onClose={turnOff} />
+        <OptionsModal className="settings-tab" onClose={closeSettings} />
       )}
       <div className="review-flashcards-page">
-        <TopBar setName="My Set" settingsOnClick={turnOn} />
-        <Flashcard term={term} definition={definition} />
+        <TopBar setName="My Set" settingsOnClick={openSettings} />
+        <Flashcard
+          term={term}
+          definition={definition}
+          shouldDisplayTerm={shouldDisplayTerm}
+          onClick={toggleDefTerm}
+        />
         {/*
       <InputBox
       */}
         <div className="arrow-container">
-          <FlashcardArrow isFacingLeft={true} onClick={prev} />
-          <FlashcardArrow isFacingLeft={false} onClick={next} />
+          <FlashcardArrow isFacingLeft={true} onClick={() => changeCard(setPrevCardIndex)} />
+          <FlashcardArrow isFacingLeft={false} onClick={() => changeCard(setNextCardIndex)} />
         </div>
       </div>
     </>
