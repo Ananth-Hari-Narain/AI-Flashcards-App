@@ -1,5 +1,7 @@
 import Flashcard from "../components/Flashcard.jsx";
 import FlashcardArrow from "../components/FlashcardArrow.jsx";
+import TopBar from "../components/TopBar.jsx";
+import OptionsModal from "../components/OptionsModal.jsx";
 import "./ReviewFlashcardsPage.css";
 import React from "react";
 
@@ -8,14 +10,28 @@ function useFlashcard(numCards) {
 
   const handlers = React.useMemo(() => ({
     next: () => {
-      setIndex(index => index < numCards - 1 ? index + 1 : index);
+      setIndex((index) => (index < numCards - 1 ? index + 1 : index));
     },
     prev: () => {
-      setIndex(index => index == 0 ? 0 : index - 1);
+      setIndex((index) => (index == 0 ? 0 : index - 1));
     },
   }));
 
   return [index, handlers];
+}
+
+function useOnOff() {
+  const [isOn, setIsOn] = React.useState(false);
+  const handlers = React.useMemo(() => ({
+    turnOn: () => {
+      setIsOn((index) => (index = true));
+    },
+    turnOff: () => {
+      setIsOn((index) => (index = false));
+    },
+  }));
+
+  return [isOn, handlers];
 }
 
 function ReviewFlashcardsPage() {
@@ -25,19 +41,25 @@ function ReviewFlashcardsPage() {
   ];
 
   const [cardIndex, { next, prev }] = useFlashcard(termDefs.length);
-  const [term, definition] = termDefs[cardIndex]
+  const [term, definition] = termDefs[cardIndex];
+
+  const [isSettingsTabOn, { turnOn, turnOff }] = useOnOff();
+
   return (
     <>
-      <Flashcard
-        term={term}
-        definition={definition}
-      />
-      {/*
+      {isSettingsTabOn && (
+        <OptionsModal className="settings-tab" onClose={turnOff} />
+      )}
+      <div className="review-flashcards-page">
+        <TopBar setName="My Set" settingsOnClick={turnOn} />
+        <Flashcard term={term} definition={definition} />
+        {/*
       <InputBox
       */}
-      <div className="arrow-container">
-        <FlashcardArrow isFacingLeft={true} onClick={prev} />
-        <FlashcardArrow isFacingLeft={false} onClick={next} />
+        <div className="arrow-container">
+          <FlashcardArrow isFacingLeft={true} onClick={prev} />
+          <FlashcardArrow isFacingLeft={false} onClick={next} />
+        </div>
       </div>
     </>
   );
